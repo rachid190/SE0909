@@ -1,6 +1,7 @@
 package com.example.tpeea.se0909;
 
 
+import android.icu.util.Measure;
 import android.support.v4.content.ContextCompat;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -21,6 +22,7 @@ public class Slider extends View {
     }
     public  Slider(Context context, AttributeSet attrs){
         super(context, attrs);
+        init(context, null);
     }
 
 
@@ -83,7 +85,7 @@ public class Slider extends View {
     private Point toPos(float value){
         int x,y;
         x = (int) Math.max(mCursorDiameter,mBarWidth)/2 +getPaddingLeft();
-        y = (int) (valueToRatio(value)*mBarLength+mCursorDiameter/2) +getPaddingTop();
+        y = (int) ((1- valueToRatio(value))*mBarLength+mCursorDiameter/2 +getPaddingTop());
         return new Point(x,y);
     }
 
@@ -162,13 +164,29 @@ public class Slider extends View {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,valueInDp, getResources().getDisplayMetrics());
     }
 
-
+    /**
+     *
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        Point p1,p2;
+        p1 = toPos(mMin);
+        p2 = toPos(mMax);
 
-
-        //canvas.drawLine(toPos(mMin).x, toPos(mMin).y , toPos(mMax) ,  , mBarPaint);
+        canvas.drawLine(p1.x, p1.y ,p2.x , p2.y  , mBarPaint);
 
     }
+
+
+    protected void onMeasure(Measure measure){
+
+        int suggestedWidth, suggestedHeight;
+        int width, height;
+
+        
+
+    }
+
 }
