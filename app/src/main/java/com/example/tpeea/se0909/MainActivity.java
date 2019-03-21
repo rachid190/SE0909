@@ -25,6 +25,12 @@ public class MainActivity extends AppCompatActivity implements Slider.SliderChan
     public void onChange(float value) {
         mTextView.setText(String.valueOf(value));
     }
+/*
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState.putFloat(monSlider.));
+    }*/
 }
+
 
 

@@ -1,8 +1,13 @@
 package com.example.tpeea.se0909;
 
 
+import android.app.Fragment;
+import android.content.res.TypedArray;
 import android.icu.util.Measure;
 import android.net.sip.SipSession;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -61,7 +66,8 @@ public class Slider extends View {
 
    public  void updateSlider(MotionEvent event) {
        Point p = new Point((int) event.getX(),(int) event.getY());
-       mValue = toValue(p);
+       //mValue = toValue(p);
+       mValue = ( toValue(p) <= mMin ? mMin : ( toValue(p) >=  mMax ? mMax : toValue(p)) );
        invalidate();
    }
 
@@ -77,7 +83,7 @@ public class Slider extends View {
                 return true;
             case MotionEvent.ACTION_UP:
                 return true;
-                
+
             default:
                 return true;
 
@@ -134,7 +140,7 @@ public class Slider extends View {
      * @param context
      * @param attrs
      */
-
+    private AttributeSet attributeSet;
     private void init(Context context, AttributeSet attrs){
 
         mBarLength = dpToPixel(DEFAULT_BAR_LENGTH);
@@ -182,9 +188,69 @@ public class Slider extends View {
         setMinimumWidth((int) dpToPixel(DEFAULT_BAR_WIDTH+getPaddingLeft()+getPaddingRight()+DEFAULT_CURSOR_DIAMETER));
         setMinimumHeight((int) dpToPixel(DEFAULT_BAR_LENGTH+getPaddingTop()+getPaddingBottom()+DEFAULT_CURSOR_DIAMETER));
 
+
+
+        //attributSet
+        if (attributeSet != null) {
+            TypedArray attr = context.obtainStyledAttributes(attributeSet,
+                    R.styleable.Slider, 0, 0);
+            mBarLength = attr.getDimension(R.styleable.Slider_barLength,mBarLength);
+            mBarWidth = attr.getDimension(R.styleable.Slider_barWidth,mBarWidth);
+
+            mEnable = !attr.getBoolean(R.styleable.Slider_disabled,!mEnable);
+
+            mCursorDiameter= attr.getDimension(R.styleable.Slider_mCursorDiameter,mCursorDiameter);
+            mValue=attr.getFloat(R.styleable.Slider_value,mValue);
+
+            mBarColor= attr.getColor(R.styleable.Slider_mBarColor, mBarColor);
+            mValueBarColor= attr.getColor(R.styleable.Slider_mValueBarColor,mValueBarColor);
+            attr.recycle();
+        }
+
+
     }
 
+    @Nullable
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        return new SavedState(super.onSaveInstanceState(), mValue);
 
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+        mValue = ((SavedState) state).sliderValue;
+        super.onRestoreInstanceState(((SavedState)
+                state).getSuperState());
+    }
+    static class SavedState extends BaseSavedState {
+        private float sliderValue;
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
+        private SavedState(Parcel source) {
+            super(source);
+            sliderValue = source.readFloat();
+        }
+        public SavedState(Parcelable superState, float value) {
+            super(superState);
+            sliderValue = value;
+        }
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeFloat(sliderValue);
+        }
+    }
     /**
      *
      * @param valueInDp
@@ -229,8 +295,12 @@ public class Slider extends View {
         canvas.drawLine(originePosition.x, originePosition.y ,cursorPosition.x , cursorPosition.y  , mValueBarPaint);
         canvas.drawCircle(cursorPosition.x, cursorPosition.y, mCursorDiameter/2, mCursorPaint);
 
-
     }
+
+
+
+
+
     public interface SliderChangeListener{
         void onChange(float value);
     }

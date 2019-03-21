@@ -8,4 +8,23 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <declare-styleable name="Slider">
+    <attr name = "barLength" format = "dimension"/>
+    <attr name = "barWidth" format = "dimension"/>
+        <attr name="mCursorDiameter" format="dimension"/>
+    <attr name = "direction" format = "enum">
+        <enum name="TO_LEFT" value = "0"/>
+        <enum name="TO_RIGHT" value = "1"/>
+        <enum name="TO_TOP" value = "2"/>
+        <enum name="TO_BOTTOM" value = "3"/>
+    </attr>
+    <attr name = "disabled" format = "boolean" />
+    <attr name = "disabledColor" format = "color"/>
+        <attr name = "mBarColor" format = "color"/>
+        <attr name = "mValueBarColor" format = "color"/>
+    <attr name="max" format="float"/>
+    <attr name = "min" format = "float"/>
+        <attr name = "value" format = "float"/>
+
+    </declare-styleable>
 </resources>
