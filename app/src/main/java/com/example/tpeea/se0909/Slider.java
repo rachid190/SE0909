@@ -2,6 +2,7 @@ package com.example.tpeea.se0909;
 
 
 import android.icu.util.Measure;
+import android.net.sip.SipSession;
 import android.support.v4.content.ContextCompat;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.text.AttributedCharacterIterator;
@@ -56,6 +58,33 @@ public class Slider extends View {
     private boolean mEnable = true;
 
     //
+
+   public  void updateSlider(MotionEvent event) {
+       Point p = new Point((int) event.getX(),(int) event.getY());
+       mValue = toValue(p);
+       invalidate();
+   }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        switch (event.getAction()){
+            case MotionEvent.ACTION_BUTTON_PRESS:
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                updateSlider(event);
+                mListener.onChange(mValue);
+                return true;
+            case MotionEvent.ACTION_UP:
+                return true;
+                
+            default:
+                return true;
+
+        }
+
+
+    }
 
     /**
      * transforme la valeur du slider en ratio entre 0 et 1
@@ -194,18 +223,23 @@ public class Slider extends View {
         p1 = toPos(mMin);
         p2 = toPos(mMax);
 
+        Point cursorPosition = toPos(mValue);
+        Point originePosition = toPos(Math.max(0, mMin));
         canvas.drawLine(p1.x, p1.y ,p2.x , p2.y  , mBarPaint);
-
-    }
-
-
-    protected void onMeasure(Measure measure){
-
-        int suggestedWidth, suggestedHeight;
-        int width, height;
-
+        canvas.drawLine(originePosition.x, originePosition.y ,cursorPosition.x , cursorPosition.y  , mValueBarPaint);
+        canvas.drawCircle(cursorPosition.x, cursorPosition.y, mCursorDiameter/2, mCursorPaint);
 
 
     }
+    public interface SliderChangeListener{
+        void onChange(float value);
+    }
+
+    private SliderChangeListener mListener;
+
+    public void setListener(SliderChangeListener listener){
+        mListener = listener;
+    }
+
 
 }
