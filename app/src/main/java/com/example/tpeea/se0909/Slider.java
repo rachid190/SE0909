@@ -150,6 +150,8 @@ public class Slider extends View {
         mBarPaint.setStrokeWidth(mBarWidth);
         mValueBarPaint.setStrokeWidth(mBarWidth);
 
+        setMinimumWidth((int) dpToPixel(DEFAULT_BAR_WIDTH+getPaddingLeft()+getPaddingRight()+DEFAULT_CURSOR_DIAMETER));
+        setMinimumHeight((int) dpToPixel(DEFAULT_BAR_LENGTH+getPaddingTop()+getPaddingBottom()+DEFAULT_CURSOR_DIAMETER));
 
     }
 
@@ -164,6 +166,23 @@ public class Slider extends View {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,valueInDp, getResources().getDisplayMetrics());
     }
 
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+
+        int suggestedWidth, suggestedHeigth;
+        int width, height;
+
+        suggestedWidth = Math.max( getSuggestedMinimumWidth(), (int) Math.max(mBarWidth,mCursorDiameter) + getPaddingLeft() );
+        suggestedHeigth = Math.max( getSuggestedMinimumHeight(), (int) Math.max(mBarLength,mCursorDiameter) + getPaddingTop() );
+
+        width= resolveSize(suggestedWidth,suggestedHeigth);
+        height=resolveSize(suggestedHeigth,suggestedWidth);
+
+        setMeasuredDimension(width,height);
+    }
     /**
      *
      * @param canvas
@@ -185,7 +204,7 @@ public class Slider extends View {
         int suggestedWidth, suggestedHeight;
         int width, height;
 
-        
+
 
     }
 
